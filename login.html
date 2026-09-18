@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-page="login" data-role="public" class="auth-body">
+
+  <div class="auth-wrap">
+    <!-- left: brand panel -->
+    <aside class="auth-side">
+      <a class="brand brand-light" href="index.html">
+        <i class="fa-solid fa-bridge"></i><span class="brand-text">SkillBridge</span>
+      </a>
+      <h1>Welcome back!</h1>
+      <p>Log in to see your job matches, applications, and training programs.</p>
+
+      <!-- demo accounts so evaluators can try every role instantly -->
+      <div class="demo-box mt-3">
+        <strong><i class="fa-solid fa-flask"></i> Demo accounts (password: 123456)</strong>
+        <button class="demo-fill" data-email="seeker@skillbridge.demo">👤 Job Seeker — seeker@skillbridge.demo</button>
+        <button class="demo-fill" data-email="employer@skillbridge.demo">🏢 Employer — employer@skillbridge.demo</button>
+        <button class="demo-fill" data-email="admin@skillbridge.demo">🛡 Admin — admin@skillbridge.demo</button>
+        <p class="small-text muted mt-1">Click one to auto-fill the form.</p>
+      </div>
+    </aside>
+
+    <!-- right: the form -->
+    <main class="auth-main">
+      <form id="login-form" class="auth-card card" novalidate>
+        <h2>Log In</h2>
+        <p class="muted small-text">New here? <a href="register.html">Create a free account</a></p>
+
+        <div class="form-group">
+          <label for="l-email"><i class="fa-solid fa-envelope"></i> Email</label>
+          <input type="email" id="l-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="l-password"><i class="fa-solid fa-lock"></i> Password</label>
+          <input type="password" id="l-password" placeholder="Your password" autocomplete="current-password">
+        </div>
+
+        <p class="form-error" id="login-error"></p>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <i class="fa-solid fa-right-to-bracket"></i> Log In
+        </button>
+
+        <p class="small-text muted text-center mt-2">
+          <i class="fa-solid fa-shield-halved"></i>
+          Frontend prototype authentication — not production secure.
+        </p>
+      </form>
+    </main>
+  </div>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/notifications.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    /* ---- login page wiring (simple, page-specific logic) ---- */
+    document.querySelectorAll('.demo-fill').forEach(btn =>
+      btn.onclick = () => {
+        document.getElementById('l-email').value = btn.dataset.email;
+        document.getElementById('l-password').value = '123456';
+      });
+
+    document.getElementById('login-form').onsubmit = e => {
+      e.preventDefault();
+      const result = Auth.login(
+        document.getElementById('l-email').value.trim(),
+        document.getElementById('l-password').value
+      );
+      if (!result.ok)
+        document.getElementById('login-error').textContent = result.message;
+    };
+  </script>
+</body>
+</html>

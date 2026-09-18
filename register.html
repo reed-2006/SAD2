@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body data-page="register" data-role="public" class="auth-body">
+
+  <div class="auth-wrap">
+    <aside class="auth-side">
+      <a class="brand brand-light" href="index.html">
+        <i class="fa-solid fa-bridge"></i><span class="brand-text">SkillBridge</span>
+      </a>
+      <h1>Join SkillBridge today.</h1>
+      <p>One free account connects you to Toledo City jobs, trainings, and livelihood programs.</p>
+
+      <div class="role-cards mt-3" id="role-cards">
+        <div class="role-card selected" data-role="seeker">
+          <i class="fa-solid fa-user-tie"></i>
+          <strong>I want a job</strong>
+          <span>Find local jobs matched to my skills</span>
+        </div>
+        <div class="role-card" data-role="employer">
+          <i class="fa-solid fa-building"></i>
+          <strong>I want to hire</strong>
+          <span>Post jobs and find workers nearby</span>
+        </div>
+        <div class="role-card" data-role="admin">
+          <i class="fa-solid fa-user-shield"></i>
+          <strong>Administrator</strong>
+          <span>Manage the platform (demo)</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="auth-main">
+      <!-- employer-only field is hidden by default and shown by JS -->
+      <form id="register-form" class="auth-card card" novalidate>
+        <h2>Create your account</h2>
+        <p class="muted small-text">Already registered? <a href="login.html">Log in here</a></p>
+
+        <div class="form-group js-employer-field" style="display:none">
+          <label for="r-company"><i class="fa-solid fa-building"></i> Business / Company Name</label>
+          <input type="text" id="r-company" placeholder="e.g. Toledo Bakeshop">
+        </div>
+
+        <div class="form-group">
+          <label for="r-name"><i class="fa-solid fa-user"></i> Full Name</label>
+          <input type="text" id="r-name" placeholder="e.g. Juan Dela Cruz" autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="r-email"><i class="fa-solid fa-envelope"></i> Email</label>
+          <input type="email" id="r-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="r-password"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="r-password" placeholder="At least 6 characters" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label for="r-confirm"><i class="fa-solid fa-lock"></i> Confirm Password</label>
+            <input type="password" id="r-confirm" placeholder="Repeat password" autocomplete="new-password">
+          </div>
+        </div>
+
+        <p class="form-error" id="reg-error"></p>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+
+        <p class="small-text muted text-center mt-2">
+          <i class="fa-solid fa-shield-halved"></i>
+          Frontend prototype authentication — not production secure.
+        </p>
+      </form>
+    </main>
+  </div>
+
+  <script src="assets/js/storage.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/notifications.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    /* ---- role picker + registration form wiring ---- */
+    let chosenRole = 'seeker';
+
+    // allow ?role=employer deep-link from the landing page
+    const urlRole = new URLSearchParams(window.location.search).get('role');
+    if (urlRole && ['seeker', 'employer', 'admin'].includes(urlRole))
+      selectRole(document.querySelector(`.role-card[data-role="${urlRole}"]`));
+
+    function selectRole(card) {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      if (!card) return;
+      card.classList.add('selected');
+      chosenRole = card.dataset.role;
+      // employer accounts need a business name; hide the field otherwise
+      document.querySelector('.js-employer-field').style.display =
+        chosenRole === 'employer' ? '' : 'none';
+    }
+
+    document.querySelectorAll('.role-card').forEach(card =>
+      card.onclick = () => selectRole(card));
+
+    document.getElementById('register-form').onsubmit = e => {
+      e.preventDefault();
+      const result = Auth.register({
+        fullName: document.getElementById('r-name').value.trim(),
+        email: document.getElementById('r-email').value.trim(),
+        password: document.getElementById('r-password').value,
+        confirmPassword: document.getElementById('r-confirm').value,
+        role: chosenRole,
+        companyName: document.getElementById('r-company')?.value.trim() || ''
+      });
+      if (!result.ok)
+        document.getElementById('reg-error').textContent = result.message;
+    };
+  </script>
+</body>
+</html>

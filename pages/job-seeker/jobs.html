@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Jobs — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="jobs" data-role="seeker">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <h1 class="page-title">Find Jobs</h1>
+      <p class="muted">Search all open jobs in Toledo City, or check your Saved list.</p>
+
+      <!-- All / Saved tabs -->
+      <div class="tab-bar mt-2">
+        <button class="tab-btn active" data-tab="all"><i class="fa-solid fa-list"></i> All Jobs</button>
+        <button class="tab-btn" data-tab="saved"><i class="fa-solid fa-bookmark"></i> Saved</button>
+      </div>
+
+      <!-- filters -->
+      <div class="card filter-bar mt-2">
+        <input type="text" id="f-q" placeholder="🔍 Job title, company, or skill…">
+        <select id="f-city"><option value="">All cities</option></select>
+        <select id="f-barangay"><option value="">All barangays</option></select>
+        <select id="f-type"><option value="">Any job type</option></select>
+        <select id="f-exp"><option value="">Any experience</option></select>
+        <select id="f-skill"><option value="">Any required skill</option></select>
+        <input type="number" id="f-salary" placeholder="Min salary ₱" min="0">
+        <select id="f-sort">
+          <option value="newest">Sort: Newest first</option>
+          <option value="match">Sort: Best match for me</option>
+          <option value="salary">Sort: Highest salary</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="clear-filters"><i class="fa-solid fa-xmark"></i> Clear</button>
+      </div>
+
+      <p class="muted small-text mt-1" id="result-count"></p>
+
+      <div class="grid-2 mt-1" id="jobs-list"></div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('seeker')) return;
+
+      /* populate dropdown options from live data */
+      const jobs = Jobs.get();
+      const uniq = arr => [...new Set(arr.filter(Boolean))].sort();
+
+      document.getElementById('f-city').innerHTML += uniq(jobs.map(j => j.location))
+        .map(c => `<option>${c}</option>`).join('');
+      document.getElementById('f-barangay').innerHTML += uniq(jobs.map(j => j.barangay))
+        .map(b => `<option>${b}</option>`).join('');
+      document.getElementById('f-type').innerHTML += ['Full-time','Part-time','Contract','Temporary','Internship','Freelance']
+        .map(t => `<option>${t}</option>`).join('');
+      document.getElementById('f-exp').innerHTML += Object.keys(Recommendations.EXP_LEVELS)
+        .map(e => `<option>${e}</option>`).join('');
+      document.getElementById('f-skill').innerHTML += Storage.get(KEYS.SKILLS)
+        .map(s => `<option>${s}</option>`).join('');
+
+      document.getElementById('clear-filters').onclick = () => {
+        document.querySelectorAll('.filter-bar input,.filter-bar select')
+          .forEach(el => el.value = '');
+        SeekerJobsPage.readAndRender();
+      };
+
+      SeekerJobsPage.init();
+    });
+  </script>
+</body>
+</html>

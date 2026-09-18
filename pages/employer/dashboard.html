@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employer Dashboard — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="employer-dashboard" data-role="employer">
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area" id="main-content"><div class="page-wrap">
+
+      <!-- pending-verification banner -->
+      <div id="verify-banner"></div>
+
+      <h1 class="page-title">Employer Dashboard</h1>
+      <p class="muted">Your hiring activity at a glance.</p>
+
+      <div class="grid-4 mt-2" id="emp-stats"></div>
+
+      <div class="row-between mt-3">
+        <h2>Recent Applicants</h2>
+        <a href="applicants.html" class="btn btn-outline btn-sm">Manage applicants <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div id="recent-applicants" class="mt-1"></div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('employer')) return;
+      const user = getCurrentUser();
+      const profile = Auth.employerProfile() || {};
+
+      /* verification status banner */
+      const vStatus = profile.verificationStatus || 'Pending';
+      document.getElementById('verify-banner').innerHTML =
+        vStatus === 'Pending'
+          ? '<div class="alert alert-warning"><i class="fa-solid fa-hourglass-half"></i> ' +
+            '<strong>Verification pending.</strong> An admin reviews new employers before your jobs appear publicly. ' +
+            '<a href="profile.html">Complete your company profile →</a></div>'
+          : vStatus === 'Rejected'
+            ? '<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i> ' +
+              '<strong>Verification rejected.</strong> Please contact the SkillBridge admin for details.</div>'
+            : '<div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> ' +
+              '<strong>Verified employer ✓</strong> — your postings are visible to job seekers.</div>';
+
+      /* stats */
+      const myJobs = Jobs.byEmployer(user.id);
+      const myApps = Applications.byEmployer(user.id);
+      document.getElementById('emp-stats').innerHTML = [
+        ['Job Postings', myJobs.length, 'fa-briefcase'],
+        ['Active Postings', myJobs.filter(j => j.status === 'Active').length, 'fa-circle-check'],
+        ['Total Applicants', myApps.length, 'fa-users'],
+        ['Shortlisted', myApps.filter(a => a.status === 'Shortlisted').length, 'fa-star']
+      ].map(([label, val, icon]) => `
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#2563EB"><i class="fa-solid ${icon}"></i></div>
+          <div><div class="stat-value">${val}</div><div class="stat-label">${label}</div></div>
+        </div>`).join('');
+
+      /* recent applicants table */
+      const recent = myApps.sort((a, b) => b.appliedAt.localeCompare(a.appliedAt)).slice(0, 6);
+      document.getElementById('recent-applicants').innerHTML =
+        recent.length === 0
+          ? UI.emptyState('fa-users', 'No applicants yet',
+              '<a href="post-job.html">Post your first job →</a>')
+          : `<div class="card table-wrap"><table class="data-table">
+              <thead><tr><th>Applicant</th><th>Applied For</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody>${recent.map(a => {
+                const seeker = Storage.get(KEYS.USERS).find(u => u.id === a.applicantId);
+                const job = Jobs.byId(a.jobId);
+                return `<tr>
+                  <td><strong>${UI.esc(seeker?.fullName || 'Unknown')}</strong></td>
+                  <td>${UI.esc(job?.title || '')}</td>
+                  <td>${UI.timeAgo(a.appliedAt)}</td>
+                  <td>${UI.statusBadge(a.status)}</td>
+                </tr>`;
+              }).join('')}</tbody></table></div>`;
+    });
+  </script>
+</body>
+</html>

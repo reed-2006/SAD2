@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Job — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="post-job" data-role="employer">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <h1 class="page-title" id="form-title">Post a New Job</h1>
+      <!-- ?id=<jobId> in the URL turns this page into an edit form -->
+      <p class="muted" id="form-sub">Fields marked * are required. Your posting goes live after admin approval.</p>
+
+      <form id="job-form" class="card mt-2" novalidate>
+
+        <h3><i class="fa-solid fa-circle-info"></i> Job Basics</h3>
+        <div class="form-grid-2 mt-1">
+          <div class="form-group">
+            <label>Job Title *</label>
+            <input type="text" id="j-title" placeholder="e.g. Kitchen Crew (Part-time)">
+          </div>
+          <div class="form-group">
+            <label>Company / Business Name *</label>
+            <input type="text" id="j-company" placeholder="e.g. Demo Local Restaurant">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Job Description *</label>
+          <textarea id="j-desc" rows="4"
+            placeholder="What will the worker do day-to-day? Keep it simple and honest."></textarea>
+        </div>
+
+        <h3 class="mt-2"><i class="fa-solid fa-money-bill-wave"></i> Salary</h3>
+        <div class="form-grid-3 mt-1">
+          <div class="form-group">
+            <label>Minimum ₱</label>
+            <input type="number" id="j-min" min="0" step="any" placeholder="e.g. 120">
+          </div>
+          <div class="form-group">
+            <label>Maximum ₱</label>
+            <input type="number" id="j-max" min="0" step="any" placeholder="e.g. 150">
+          </div>
+          <div class="form-group">
+            <label>Per</label>
+            <select id="j-stype">
+              <option value="hour">Hour</option>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month" selected>Month</option>
+              <option value="year">Year</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="mt-2"><i class="fa-solid fa-location-dot"></i> Location & Type</h3>
+        <div class="form-grid-2 mt-1">
+          <div class="form-group">
+            <label>City / Municipality *</label>
+            <input type="text" id="j-city" value="Toledo City">
+          </div>
+          <div class="form-group">
+            <label>Barangay</label>
+            <input type="text" id="j-brgy" list="brgy-list" placeholder="e.g. Poblacion">
+            <datalist id="brgy-list">
+              <option>Poblacion</option><option>Bato</option><option>Talavera</option>
+              <option>Sangi</option><option>Dumlog</option><option>Awihao</option><option>Sam-ang</option>
+            </datalist>
+          </div>
+          <div class="form-group">
+            <label>Job Type</label>
+            <select id="j-type">
+              <option>Full-time</option><option>Part-time</option><option>Contract</option>
+              <option>Temporary</option><option>Internship</option><option>Freelance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Experience Level</label>
+            <select id="j-exp">
+              <option>No Experience Needed</option>
+              <option>1 Year</option>
+              <option>2 Years or More</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="mt-2"><i class="fa-solid fa-list-check"></i> Requirements & Skills</h3>
+        <div class="form-grid-2 mt-1">
+          <div class="form-group">
+            <label>Requirements</label>
+            <textarea id="j-req" rows="3"
+              placeholder="e.g. At least high school graduate, can work weekends…"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Skills Needed (comma-separated)</label>
+            <textarea id="j-skills" rows="3"
+              placeholder="e.g. Cooking, Customer Service"></textarea>
+            <p class="small-text muted">These power the matching system — be specific.</p>
+          </div>
+        </div>
+
+        <h3 class="mt-2"><i class="fa-solid fa-calendar"></i> Openings & Deadline</h3>
+        <div class="form-grid-2 mt-1">
+          <div class="form-group">
+            <label>Number of Openings</label>
+            <input type="number" id="j-openings" min="1" value="1">
+          </div>
+          <div class="form-group">
+            <label>Application Deadline *</label>
+            <input type="date" id="j-deadline">
+          </div>
+        </div>
+
+        <div class="btn-row mt-2">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fa-solid fa-paper-plane"></i> Submit Posting</button>
+          <a class="btn btn-ghost btn-lg" href="jobs.html">Cancel</a>
+        </div>
+      </form>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('employer')) return;
+      // pre-fill company name from the employer profile
+      const profile = Auth.employerProfile();
+      const comp = document.getElementById('j-company');
+      if (profile?.companyName && !comp.value) comp.value = profile.companyName;
+
+      EmployerJobsPage.initForm();
+
+      // default deadline: 30 days from now
+      if (!document.getElementById('j-deadline').value) {
+        const d = new Date(); d.setDate(d.getDate() + 30);
+        document.getElementById('j-deadline').value = d.toISOString().slice(0, 10);
+      }
+    });
+  </script>
+</body>
+</html>

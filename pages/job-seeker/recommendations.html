@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommendations — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="recommendations" data-role="seeker">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <h1 class="page-title">Recommended for You</h1>
+
+      <!-- explain the algorithm in plain language -->
+      <div class="card mt-2">
+        <h3><i class="fa-solid fa-wand-magic-sparkles"></i> How matching works (Rule-Based System)</h3>
+        <p class="muted">SkillBridge is not AI — it follows clear rules that anyone can check.
+          Your score for each job adds up like this:</p>
+        <div class="weight-row">
+          <div><strong>50%</strong> Skills matched</div>
+          <div><strong>25%</strong> Same location</div>
+          <div><strong>15%</strong> Experience fits</div>
+          <div><strong>10%</strong> Preferred job type</div>
+        </div>
+        <p class="muted small-text">Every job card below shows exactly which rules passed ✓ or missed ✗.</p>
+      </div>
+
+      <div id="rec-empty"></div>
+      <div class="grid-2 mt-2" id="rec-list"></div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    /* ---- recommendations page controller ---- */
+    const RecommendationsPage = {
+      render() {
+        const user = getCurrentUser();
+        const profile = Auth.seekerProfile();
+        const ranked = Recommendations.getRankedJobs(profile || {});
+
+        document.getElementById('rec-empty').innerHTML =
+          !profile?.skills?.length
+            ? '<div class="alert alert-warning mt-2"><i class="fa-solid fa-triangle-exclamation"></i> ' +
+              '<a href="profile.html">Add skills to your profile</a> to unlock better matches!</div>'
+            : '';
+
+        document.getElementById('rec-list').innerHTML = ranked.length === 0
+          ? UI.emptyState('fa-wand-magic-sparkles', 'No active jobs right now',
+              'New jobs are posted regularly — check back soon.')
+          : ranked.map(r => Jobs.card(r.job, { showMatch: r })).join('');
+
+        this.bind();
+      },
+
+      bind() {
+        document.querySelectorAll('.js-view').forEach(b =>
+          b.onclick = e => { e.preventDefault(); Jobs.openDetails(b.dataset.id); });
+        document.querySelectorAll('.js-save').forEach(b =>
+          b.onclick = () => {
+            const saved = Jobs.toggleSave(b.dataset.id, getCurrentUser().id);
+            UI.toast(saved ? 'Job saved.' : 'Removed from saved jobs.');
+            this.render();
+          });
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('seeker')) return;
+      RecommendationsPage.render();
+    });
+  </script>
+</body>
+</html>

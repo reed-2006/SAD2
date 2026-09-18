@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Resume — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="resume" data-role="seeker">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <h1 class="page-title">My Resume</h1>
+      <p class="muted">Your resume builds itself from your profile — just add a short summary,
+        then print or save it as PDF.</p>
+
+      <!-- editor -->
+      <div class="card mt-2 no-print">
+        <h3><i class="fa-solid fa-pen"></i> Professional Summary</h3>
+        <p class="muted small-text">2–3 sentences about yourself: who you are, your strongest skills, and the job you're looking for.</p>
+        <div class="form-group mt-1">
+          <textarea id="r-summary" rows="4"
+            placeholder="e.g. Hardworking high school graduate from Bato, Toledo City with 2 years of food service experience. Skilled in cooking and customer service. Looking for a full-time kitchen or service role."></textarea>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="r-save"><i class="fa-solid fa-floppy-disk"></i> Save Summary</button>
+          <button class="btn btn-outline" id="r-print"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+          <a class="btn btn-ghost" href="profile.html">Edit profile sections →</a>
+        </div>
+      </div>
+
+      <!-- live preview (this is what prints) -->
+      <h3 class="mt-3 no-print"><i class="fa-solid fa-eye"></i> Preview</h3>
+      <div id="resume-sheet" class="resume-sheet card mt-1"><!-- built by resume.js --></div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script src="../../assets/js/resume.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => ResumePage.init());
+  </script>
+</body>
+</html>

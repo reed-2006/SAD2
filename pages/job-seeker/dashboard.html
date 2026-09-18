@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="dashboard" data-role="seeker">
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area" id="main-content"><div class="page-wrap">
+
+      <!-- profile completeness nudge -->
+      <div id="profile-nudge"></div>
+
+      <h1 class="page-title">Good day, <span id="hello-name"></span>! 👋</h1>
+      <p class="muted">Here's your job activity at a glance.</p>
+
+      <!-- quick numbers -->
+      <div class="grid-4 mt-2" id="stat-cards"></div>
+
+      <!-- top matches -->
+      <div class="row-between mt-3">
+        <h2>Your Top Matches</h2>
+        <a href="recommendations.html" class="btn btn-outline btn-sm">See all <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <p class="muted small-text">Ranked by our Rule-Based Job Recommendation System
+        (skills 50% · location 25% · experience 15% · job type 10%).</p>
+      <div class="grid-2 mt-2" id="top-matches"></div>
+
+      <!-- recent applications -->
+      <h2 class="mt-3">Recent Applications</h2>
+      <div id="recent-apps"></div>
+
+      <!-- grow your skills -->
+      <div class="card mt-3 row-between grow-strip">
+        <div>
+          <h3><i class="fa-solid fa-seedling"></i> While you wait — level up!</h3>
+          <p class="muted">Free skills trainings and livelihood programs are open around Toledo City.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn btn-outline" href="training.html">Skills Training</a>
+          <a class="btn btn-primary" href="livelihood.html">Livelihood & Assistance</a>
+        </div>
+      </div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    /* ---- seeker dashboard controller (page-specific) ---- */
+    const SeekerDashboardPage = {
+      renderRecommendations() {
+        const user = getCurrentUser();
+        const profile = Auth.seekerProfile();
+        const ranked = Recommendations.getRankedJobs(profile || {}).slice(0, 4);
+
+        document.getElementById('top-matches').innerHTML = ranked.length === 0
+          ? UI.emptyState('fa-wand-magic-sparkles', 'No active jobs right now',
+              'Check back soon — new jobs are posted regularly.')
+          : ranked.map(r => Jobs.card(r.job, { showMatch: r })).join('');
+
+        this.bindCards();
+        this.renderStats(user, profile);
+        this.renderRecentApps(user);
+      },
+
+      bindCards() {
+        document.querySelectorAll('.js-view').forEach(b =>
+          b.onclick = e => { e.preventDefault(); Jobs.openDetails(b.dataset.id); });
+        document.querySelectorAll('.js-apply').forEach(b =>
+          b.onclick = () => { if (Applications.applyToJob(b.dataset.id).ok) this.renderRecommendations(); });
+        document.querySelectorAll('.js-save').forEach(b =>
+          b.onclick = () => {
+            const saved = Jobs.toggleSave(b.dataset.id, getCurrentUser().id);
+            UI.toast(saved ? 'Job saved.' : 'Removed from saved jobs.');
+            this.renderRecommendations();
+          });
+      },
+
+      renderStats(user, profile) {
+        const apps = Applications.byApplicant(user.id);
+        const matches = Recommendations.getRankedJobs(profile || {});
+        const goodMatches = matches.filter(m => m.score >= 70).length;
+
+        // how complete is the profile? simple checklist
+        const checks = [
+          profile.skills?.length > 0,
+          !!profile.barangay,
+          !!profile.contactNumber,
+          !!profile.professionalSummary
+        ];
+        const complete = checks.filter(Boolean).length;
+        const pct = Math.round((complete / checks.length) * 100);
+
+        document.getElementById('profile-nudge').innerHTML = pct < 100 ? `
+          <div class="alert alert-info">
+            <i class="fa-solid fa-lightbulb"></i> Your profile is <strong>${pct}% complete</strong>.
+            A fuller profile = better job matches!
+            <a href="profile.html">Complete it now →</a>
+          </div>` : '';
+
+        document.getElementById('stat-cards').innerHTML = [
+          ['Applications Sent', apps.length, 'fa-paper-plane'],
+          ['Jobs Matching ≥70%', goodMatches, 'fa-star'],
+          ['Saved Jobs', Storage.get(KEYS.SAVED_JOBS).filter(s => s.userId === user.id).length, 'fa-bookmark'],
+          ['Unread Alerts', Notifications.unreadCount(user.id), 'fa-bell']
+        ].map(([label, val, icon]) => `
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#2563EB"><i class="fa-solid ${icon}"></i></div>
+            <div><div class="stat-value">${val}</div><div class="stat-label">${label}</div></div>
+          </div>`).join('');
+      },
+
+      renderRecentApps(user) {
+        const apps = Applications.byApplicant(user.id)
+          .sort((a, b) => b.appliedAt.localeCompare(a.appliedAt)).slice(0, 5);
+
+        document.getElementById('recent-apps').innerHTML =
+          apps.length === 0
+            ? UI.emptyState('fa-file-lines', 'No applications yet',
+                '<a href="jobs.html">Find your first job →</a>')
+            : `<div class="card table-wrap"><table class="data-table">
+                <thead><tr><th>Job</th><th>Applied</th><th>Status</th></tr></thead>
+                <tbody>${apps.map(a => {
+                  const j = Jobs.byId(a.jobId);
+                  return j ? `<tr>
+                    <td><strong>${UI.esc(j.title)}</strong><br>
+                        <span class="muted small-text">${UI.esc(j.company)}</span></td>
+                    <td>${UI.timeAgo(a.appliedAt)}</td>
+                    <td>${UI.statusBadge(a.status)}</td></tr>` : '';
+                }).join('')}</tbody></table></div>`;
+      }
+    };
+
+    /* ---- boot this page ---- */
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('seeker')) return;
+      document.getElementById('hello-name').textContent =
+        getCurrentUser().fullName.split(' ')[0];
+      SeekerDashboardPage.renderRecommendations();
+    });
+  </script>
+</body>
+</html>

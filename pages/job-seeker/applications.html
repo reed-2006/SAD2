@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="applications" data-role="seeker">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <div class="row-between">
+        <h1 class="page-title">My Applications</h1>
+        <select id="app-filter">
+          <option value="">All statuses</option>
+          <option>Pending</option><option>Reviewed</option><option>Shortlisted</option>
+          <option>Accepted</option><option>Rejected</option>
+        </select>
+      </div>
+      <p class="muted">Track every job you applied to and its current status.</p>
+
+      <div id="apps-list" class="mt-2"></div>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/applications.js"></script>
+  <script src="../../assets/js/jobs.js"></script>
+  <script src="../../assets/js/recommendations.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!Auth.requireRole('seeker')) return;
+      Applications.renderSeekerPage();
+    });
+  </script>
+</body>
+</html>

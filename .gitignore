@@ -1,0 +1,8 @@
+# OS junk
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# SkillBridge demo backups
+*.json-backup
+skillbridge-backup-*.json

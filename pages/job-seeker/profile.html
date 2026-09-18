@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — SkillBridge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/components.css">
+  <link rel="stylesheet" href="../../assets/css/responsive.css">
+</head>
+<body data-page="profile" data-role="seeker">
+
+  <header id="topbar"></header>
+
+  <div class="shell">
+    <aside id="sidebar"></aside>
+
+    <main class="main-area"><div class="page-wrap">
+
+      <h1 class="page-title">My Profile</h1>
+      <p class="muted">The more complete this is, the better your job matches will be.
+        Everything saves to your browser only.</p>
+
+      <form id="profile-form" novalidate>
+
+        <!-- personal info -->
+        <div class="card mt-2">
+          <h3><i class="fa-solid fa-id-card"></i> Personal Information</h3>
+          <div class="form-grid-2 mt-1">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="p-fullname" disabled title="Name is set at registration">
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="p-email" disabled>
+            </div>
+            <div class="form-group">
+              <label>Contact Number</label>
+              <input type="tel" id="p-contact" placeholder="09XXXXXXXXX">
+            </div>
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" id="p-city">
+            </div>
+            <div class="form-group">
+              <label>Barangay</label>
+              <input type="text" id="p-barangay" list="barangay-list" placeholder="e.g. Poblacion">
+              <datalist id="barangay-list">
+                <option>Poblacion</option><option>Bato</option><option>Talavera</option>
+                <option>Sangi</option><option>Dumlog</option><option>Awihao</option><option>Sam-ang</option>
+              </datalist>
+            </div>
+            <div class="form-group">
+              <label>Preferred Job Type</label>
+              <select id="p-jobtype"><!-- filled by profile.js --></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- skills -->
+        <div class="card mt-2">
+          <h3><i class="fa-solid fa-star"></i> My Skills</h3>
+          <p class="muted small-text">These power the matching system — list everything you can do.</p>
+          <div id="p-skills-list" class="tag-list mt-1"></div>
+          <div class="btn-row mt-2">
+            <input type="text" id="p-new-skill" list="skills-suggestions"
+                   placeholder="Type a skill and press Add…">
+            <datalist id="skills-suggestions"></datalist>
+            <button type="button" class="btn btn-primary btn-sm" id="p-add-skill">
+              <i class="fa-solid fa-plus"></i> Add Skill</button>
+          </div>
+        </div>
+
+        <!-- education -->
+        <div class="card mt-2">
+          <div class="row-between">
+            <h3><i class="fa-solid fa-graduation-cap"></i> Education</h3>
+            <button type="button" class="btn btn-outline btn-sm" id="add-education">
+              <i class="fa-solid fa-plus"></i> Add School</button>
+          </div>
+          <div id="list-education" class="mt-1"></div>
+        </div>
+
+        <!-- experience -->
+        <div class="card mt-2">
+          <div class="row-between">
+            <h3><i class="fa-solid fa-briefcase"></i> Work Experience</h3>
+            <button type="button" class="btn btn-outline btn-sm" id="add-experience">
+              <i class="fa-solid fa-plus"></i> Add Work Experience</button>
+          </div>
+          <div id="list-experience" class="mt-1"></div>
+        </div>
+
+        <!-- trainings -->
+        <div class="card mt-2">
+          <div class="row-between">
+            <h3><i class="fa-solid fa-certificate"></i> Trainings & Seminars</h3>
+            <button type="button" class="btn btn-outline btn-sm" id="add-trainings">
+              <i class="fa-solid fa-plus"></i> Add Training</button>
+          </div>
+          <div id="list-trainings" class="mt-1"></div>
+        </div>
+
+        <!-- summary -->
+        <div class="card mt-2">
+          <h3><i class="fa-solid fa-comment-dots"></i> About Me (Professional Summary)</h3>
+          <div class="form-group mt-1">
+            <textarea id="p-summary" rows="4" placeholder="Short introduction shown to employers…"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-2">
+          <i class="fa-solid fa-floppy-disk"></i> Save Profile
+        </button>
+      </form>
+
+    </div></main>
+  </div>
+
+  <div id="toast-wrap" class="toast-wrap"></div>
+
+  <script src="../../assets/js/storage.js"></script>
+  <script src="../../assets/js/ui.js"></script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/notifications.js"></script>
+  <script src="../../assets/js/app.js"></script>
+  <script src="../../assets/js/profile.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => ProfilePage.initSeeker());
+  </script>
+</body>
+</html>
